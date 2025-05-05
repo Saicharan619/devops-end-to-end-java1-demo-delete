@@ -1,0 +1,8 @@
+environment:
+  name: charan-env
+  identifier: charanenv
+  description: ""
+  tags: {}
+  type: PreProduction
+  orgIdentifier: default
+  projectIdentifier: SFTY_Training
