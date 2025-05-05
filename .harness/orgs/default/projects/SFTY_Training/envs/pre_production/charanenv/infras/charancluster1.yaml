@@ -1,0 +1,14 @@
+infrastructureDefinition:
+  name: charan-cluster-1
+  identifier: charancluster1
+  orgIdentifier: default
+  projectIdentifier: SFTY_Training
+  environmentRef: charanenv
+  deploymentType: Kubernetes
+  type: KubernetesGcp
+  spec:
+    connectorRef: gcp_key_charan
+    cluster: europe-central2-a/cluster-1
+    namespace: default
+    releaseName: release-<+INFRA_KEY_SHORT_ID>
+  allowSimultaneousDeployments: false
