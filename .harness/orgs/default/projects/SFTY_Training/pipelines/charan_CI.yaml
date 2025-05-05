@@ -1,0 +1,98 @@
+pipeline:
+  name: charan_CI
+  identifier: charan_CI
+  projectIdentifier: SFTY_Training
+  orgIdentifier: default
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: charangithubconnector
+        repoName: devops-end-to-end-java1-demo-delete
+        build: <+input>
+  stages:
+    - stage:
+        name: mvn and docker
+        identifier: mvn_and_docker
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          caching:
+            enabled: true
+            override: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: git clone
+                  identifier: git_clone
+                  spec:
+                    shell: Sh
+                    command: git clone https://github.com/Saicharan619/devops-end-to-end-java1-demo-delete.git
+              - step:
+                  type: Run
+                  name: mvn
+                  identifier: mvn
+                  spec:
+                    shell: Sh
+                    command: |-
+                      apt update && apt install -y openjdk-17-jdk maven
+
+                      # Check installed Java versions
+                      echo "Checking installed Java versions..."
+                      update-alternatives --list java || echo "No alternatives found for Java"
+
+                      # Set Java 17 as the default version for AMD64
+                      update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-17-openjdk-amd64/bin/java 1
+                      update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java
+
+                      # Set JAVA_HOME and update PATH for AMD64
+                      export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+                      export PATH=$JAVA_HOME/bin:$PATH
+
+                      # Verify Java version
+                      echo "Java version after setting JAVA_HOME:"
+                      java -version
+
+                      # Verify Maven version
+                      echo "Maven version:"
+                      mvn -version
+
+                      # Run Maven build
+                      mvn clean package -DskipTests
+              - step:
+                  type: Sonarqube
+                  name: Sonarqube_1
+                  identifier: Sonarqube_1
+                  spec:
+                    mode: orchestration
+                    config: default
+                    target:
+                      type: repository
+                      detection: auto
+                    advanced:
+                      log:
+                        level: info
+                    auth:
+                      access_token: sqa_dd9104f5b89b29039df44b18ad8de561a3cfc0af
+                      domain: http://34.51.179.78:9000/
+                      ssl: true
+                    tool:
+                      java:
+                        binaries: target/
+              - step:
+                  type: BuildAndPushDockerRegistry
+                  name: BuildAndPushDockerRegistry_1
+                  identifier: BuildAndPushDockerRegistry_1
+                  spec:
+                    connectorRef: docker_charan
+                    repo: saicharan12121/haress_push
+                    tags:
+                      - latest
