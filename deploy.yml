@@ -1,0 +1,15 @@
+infrastructureDefinition:
+  name: cluster-5th
+  identifier: cluster5th
+  orgIdentifier: default
+  projectIdentifier: SFTY_Training
+  environmentRef: env_deploy
+  deploymentType: Kubernetes
+  type: KubernetesGcp
+  spec:
+    connectorRef: gcp_key_charan
+    cluster: europe-central2-a/cluster-1
+    namespace: default
+    releaseName: release-<+INFRA_KEY_SHORT_ID>
+  allowSimultaneousDeployments: false
+  scopedServices: []
